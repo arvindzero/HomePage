@@ -1,0 +1,1153 @@
+{
+  "__inputs": [
+    {
+      "name": "DS_INFLUXDB",
+      "label": "InfluxDB",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "influxdb",
+      "pluginName": "InfluxDB"
+    }
+  ],
+  "__elements": {},
+  "__requires": [
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "12.3.1"
+    },
+    {
+      "type": "datasource",
+      "id": "influxdb",
+      "name": "InfluxDB",
+      "version": "1.0.0"
+    },
+    {
+      "type": "panel",
+      "id": "nline-plotlyjs-panel",
+      "name": "Plotly",
+      "version": "1.8.1"
+    },
+    {
+      "type": "panel",
+      "id": "stat",
+      "name": "Stat",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "text",
+      "name": "Text",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "timeseries",
+      "name": "Time series",
+      "version": ""
+    }
+  ],
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "gridPos": {
+        "h": 7,
+        "w": 6,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "# Under Construction!! \n\nData may be wrong, graphs may be wrong. Work in progress, Feb 2024",
+        "mode": "markdown"
+      },
+      "pluginVersion": "12.3.1",
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_INFLUXDB}"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-GrYlRd"
+          },
+          "mappings": [],
+          "max": 600,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": 0
+              }
+            ]
+          },
+          "unit": "gCO₂eq/kWh"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 7,
+        "x": 6,
+        "y": 0
+      },
+      "id": 5,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "/^_value$/",
+          "values": true
+        },
+        "showPercentChange": false,
+        "text": {
+          "valueSize": 40
+        },
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.3.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB}"
+          },
+          "query": "from(bucket: \"carbon_intensity\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"ontario_carbon\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"carbon\")\r\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\r\n  |>mean()\r\n  |>group()",
+          "refId": "A"
+        }
+      ],
+      "title": "Carbon Intensity",
+      "transformations": [
+        {
+          "id": "filterFieldsByName",
+          "options": {}
+        }
+      ],
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_INFLUXDB}"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": 0
+              }
+            ]
+          },
+          "unit": "MW"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 13,
+        "y": 0
+      },
+      "id": 6,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "max"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "text": {
+          "valueSize": 40
+        },
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.3.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB}"
+          },
+          "query": "from(bucket: \"onpower\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"demand\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"mw\")\r\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\r\n  |> yield(name: \"mean\")",
+          "refId": "A"
+        }
+      ],
+      "title": "Peak Demand",
+      "transformations": [
+        {
+          "id": "filterFieldsByName",
+          "options": {
+            "include": {}
+          }
+        }
+      ],
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_INFLUXDB}"
+      },
+      "description": "",
+      "gridPos": {
+        "h": 7,
+        "w": 5,
+        "x": 19,
+        "y": 0
+      },
+      "hideTimeOverride": true,
+      "id": 4,
+      "options": {
+        "allData": {
+          "opacity": 0.8
+        },
+        "config": {
+          "displayModeBar": false
+        },
+        "data": [
+          {
+            "type": "pie"
+          }
+        ],
+        "imgFormat": "png",
+        "layout": {
+          "annotations": [
+            {
+              "align": "center",
+              "font": {
+                "color": "#ffffff",
+                "family": "Arial",
+                "size": 18
+              },
+              "opacity": 1,
+              "showarrow": false,
+              "text": "Daily Power Mix",
+              "x": 0.5,
+              "xref": "paper",
+              "y": "1.0",
+              "yref": "paper"
+            }
+          ],
+          "font": {
+            "color": "white",
+            "family": "Inter, Helvetica, Arial, sans-serif"
+          },
+          "hoverlabel": {
+            "bgcolor": "white"
+          },
+          "margin": {
+            "b": 5,
+            "l": 25,
+            "r": 25,
+            "t": 5
+          },
+          "paper_bgcolor": "rgba(0,0,0,0)",
+          "plot_bgcolor": "rgba(0,0,0,0)",
+          "showlegend": false,
+          "title": {
+            "automargin": true
+          },
+          "xaxis": {
+            "automargin": true,
+            "autorange": true,
+            "range": [
+              -1,
+              6
+            ],
+            "showgrid": false,
+            "showline": false,
+            "type": "date"
+          },
+          "yaxis": {
+            "automargin": true,
+            "autorange": true,
+            "range": [
+              -1,
+              4
+            ],
+            "showgrid": false,
+            "showline": false
+          }
+        },
+        "onclick": "// console.log(data);\n// window.updateVariables({query:{'var-project':'test'}, partial: true})",
+        "resScale": 2,
+        "script": "\n\nlet trace = {\n  values: data.series[0].fields[0].values,\n  //labels: data.series[0].fields[2].values,\n  labels: [\"🌲\",\"🔥\",\"🌊\",\"😎\",\"🌞\",\"💨\"],\n  type: 'pie',\n  texttemplate: '%{label}%{percent:.0%}', //https://github.com/d3/d3-format/tree/v1.4.5#d3-format\n  textfont: {\n    color: ['white','white','white','white','white','white'],\n    size: 14\n  },\n  outsidetextfont: {\n    color: 'white',\n    size: 14\n  },\n  rotation: 180,\n  marker: {\n    colors: [\n      'rgba(230, 107, 64, 1)',\n      'rgba(250, 222, 42, 1)',\n      'rgba(87, 148, 242, 1)',\n      'rgba(184, 119, 217, 1)',\n      'rgba(242, 73, 92, 1)',\n      'rgba(115, 191, 105, 1)'\n    ]\n  }\n};\n\nreturn { data: [trace ] };",
+        "syncTimeRange": false,
+        "timeCol": "",
+        "yamlMode": true,
+        "yaml_mode": true
+      },
+      "pluginVersion": "1.8.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB}"
+          },
+          "query": "import \"math\"\r\nfrom(bucket: \"onpower\")\r\n  |> range(start: -24h, stop: -1s)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"production\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"outputmw\")\r\n  |> drop(columns: [\"_start\", \"_stop\"])\r\n  |> group(columns: [\"generator\", \"type\"], mode:\"by\")  \r\n  |> mean()\r\n  |> group(columns: [\"type\"], mode:\"by\")  \r\n  |> sum(column: \"_value\")  \r\n  |> map(fn: (r) => ({ r with _value: math.round(x: r._value) }))  \r\n  |>group()",
+          "refId": "A"
+        }
+      ],
+      "timeFrom": "24h",
+      "transformations": [
+        {
+          "id": "filterFieldsByName",
+          "options": {
+            "include": {
+              "names": []
+            }
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {},
+            "indexByName": {
+              "_time": 0,
+              "coal_GWh": 2,
+              "hydro_GWh": 3,
+              "naturalgas_GWh": 1,
+              "other_GWh": 5,
+              "solar_GWh": 6,
+              "wind_GWh": 4
+            },
+            "renameByName": {
+              "coal": "Coal",
+              "coal_GWh": "Coal",
+              "gas": "Natural Gas",
+              "hydro": "Hydro",
+              "hydro_GWh": "Hydro",
+              "naturalgas_GWh": "Natural Gas",
+              "other": "Other",
+              "other_GWh": "Other",
+              "solar": "Solar",
+              "solar_GWh": "Solar",
+              "wind": "Wind",
+              "wind_GWh": "Wind"
+            }
+          }
+        }
+      ],
+      "transparent": true,
+      "type": "nline-plotlyjs-panel"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_INFLUXDB}"
+      },
+      "description": "",
+      "gridPos": {
+        "h": 9,
+        "w": 24,
+        "x": 0,
+        "y": 7
+      },
+      "hideTimeOverride": true,
+      "id": 3,
+      "options": {
+        "allData": {
+          "opacity": 0.8
+        },
+        "config": {
+          "displayModeBar": false
+        },
+        "data": "console.log(data)",
+        "imgFormat": "png",
+        "layout": {
+          "annotations": [
+            {
+              "align": "right",
+              "font": {
+                "color": "#ccc",
+                "family": "Arial",
+                "size": 14
+              },
+              "opacity": 1,
+              "showarrow": false,
+              "text": "<b>Solid colour bar</b>: This day's generation. <br> <b>Gray bar</b>: Source's maximum generating capacity. <br><b>Box plots</b> show range since 2023-11-14: <br>daily min, mean, max, quartiles. ",
+              "x": 0.98,
+              "xref": "paper",
+              "y": ".02",
+              "yref": "paper"
+            },
+            {
+              "align": "center",
+              "font": {
+                "color": "#ccc",
+                "family": "Arial",
+                "size": 18
+              },
+              "opacity": 1,
+              "showarrow": false,
+              "text": "<b>Average Power Generation Last 24 Hours</b>",
+              "x": 0.5,
+              "xref": "paper",
+              "y": "1.08",
+              "yref": "paper"
+            }
+          ],
+          "barmode": "stack",
+          "font": {
+            "color": "darkgrey",
+            "family": "Arial"
+          },
+          "hoverlabel": {
+            "bgcolor": "white"
+          },
+          "margin": {
+            "b": 40,
+            "l": 175,
+            "pad": 0,
+            "r": 0,
+            "t": 30
+          },
+          "paper_bgcolor": "rgba(0,0,0,0)",
+          "plot_bgcolor": "rgba(0,0,0,0)",
+          "showlegend": false,
+          "title": {
+            "automargin": true
+          },
+          "xaxis": {
+            "automargin": true,
+            "autorange": true,
+            "gridcolor": "#3d3d3d",
+            "range": [
+              -100,
+              4500
+            ],
+            "tickfont": {
+              "size": 16
+            },
+            "title": {
+              "font": {
+                "size": 16
+              },
+              "text": "Megawatts"
+            },
+            "type": "linear"
+          },
+          "yaxis": {
+            "automargin": true,
+            "autorange": true,
+            "range": [
+              -97.66666666666664,
+              1835.6666666666667
+            ],
+            "showgrid": false,
+            "tickfont": {
+              "size": 22
+            },
+            "type": "category"
+          }
+        },
+        "onclick": "// console.log(data);\n// window.updateVariables({query:{'var-project':'test'}, partial: true})",
+        "resScale": 2,
+        "script": "console.log(data)\n\n// copy and paste from https://stackoverflow.com/a/13542669\n// This enables cool tweaks to existing colors\nconst pSBC=(p,c0,c1,l)=>{\n    let r,g,b,P,f,t,h,i=parseInt,m=Math.round,a=typeof(c1)==\"string\";\n    if(typeof(p)!=\"number\"||p<-1||p>1||typeof(c0)!=\"string\"||(c0[0]!='r'&&c0[0]!='#')||(c1&&!a))return null;\n    if(!this.pSBCr)this.pSBCr=(d)=>{\n        let n=d.length,x={};\n        if(n>9){\n            [r,g,b,a]=d=d.split(\",\"),n=d.length;\n            if(n<3||n>4)return null;\n            x.r=i(r[3]==\"a\"?r.slice(5):r.slice(4)),x.g=i(g),x.b=i(b),x.a=a?parseFloat(a):-1\n        }else{\n            if(n==8||n==6||n<4)return null;\n            if(n<6)d=\"#\"+d[1]+d[1]+d[2]+d[2]+d[3]+d[3]+(n>4?d[4]+d[4]:\"\");\n            d=i(d.slice(1),16);\n            if(n==9||n==5)x.r=d>>24&255,x.g=d>>16&255,x.b=d>>8&255,x.a=m((d&255)/0.255)/1000;\n            else x.r=d>>16,x.g=d>>8&255,x.b=d&255,x.a=-1\n        }return x};\n    h=c0.length>9,h=a?c1.length>9?true:c1==\"c\"?!h:false:h,f=this.pSBCr(c0),P=p<0,t=c1&&c1!=\"c\"?this.pSBCr(c1):P?{r:0,g:0,b:0,a:-1}:{r:255,g:255,b:255,a:-1},p=P?p*-1:p,P=1-p;\n    if(!f||!t)return null;\n    if(l)r=m(P*f.r+p*t.r),g=m(P*f.g+p*t.g),b=m(P*f.b+p*t.b);\n    else r=m((P*f.r**2+p*t.r**2)**0.5),g=m((P*f.g**2+p*t.g**2)**0.5),b=m((P*f.b**2+p*t.b**2)**0.5);\n    a=f.a,t=t.a,f=a>=0||t>=0,a=f?a<0?t:t<0?a:a*P+t*p:0;\n    if(h)return\"rgb\"+(f?\"a(\":\"(\")+r+\",\"+g+\",\"+b+(f?\",\"+m(a*1000)/1000:\"\")+\")\";\n    else return\"#\"+(4294967296+r*16777216+g*65536+b*256+(f?m(a*255):0)).toString(16).slice(1,f?undefined:-2)\n}\n\n/*let util_array = data.series[15]\n// variables to make this make more sense \nlet util_min = 1\nlet util_max = 0\nlet util_q1 = 2\nlet util_q3 = 3\nlet util_coal = 1\nlet util_gas = 2\nlet util_hydro = 3\nlet util_other = 4\nlet util_solar = 5\nlet util_wind = 6*/\n\n\nlet max_colour = \"white\"\nlet min_colour = \"rgb(23, 216, 255)\"\nlet title_colour = \"white\"\nlet new_max_colour = \"rgb(240, 0, 232)\"\nlet new_min_colour = \"rgb(23, 216, 255)\"\nlet max_width = 4\nlet barcolour =  'white' //\"rgba(40, 40, 40, 0.9)\" \nlet barbordercolour = \"rgba(50, 50, 50, 0.75)\"\nlet barbackgroundcolour = '#333'\nlet bar_border_width = 2\nlet bar_shading_factor = 0.5\nlet bar_hh_offset = 2\nlet bar_text_font_size = 22\nlet transparent_color = 'rgba(0,0,0,0.1)'\nlet box_width = 0.3\nlet capacity_shading_factor = .99\nlet box_plot_shading_factor = .5\nlet box_plot_fill_shading_factor = .3\nlet outside_bar_label_default_color = '#ccc'\n\n// Get column names from Utilization  query\n/*\nfor (let i = 0; i < 6; i++) {\n  if (data.series[8].fields[i].name == \"gas\") {\n    gas_index_util = i;\n  }\n  else if (data.series[6].fields[i].name == \"biofuel\") {\n    biofuel_index_util = i;\n  }\n  else if (data.series[6].fields[i].name == \"hydro\") {\n    hydro_index_util = i;\n  }\n  else if (data.series[6].fields[i].name == \"wind\") {\n    wind_index_util = i;\n  }\n  else if (data.series[6].fields[i].name == \"solar\") {\n    solar_index_util = i;\n  }\n}*/\n\n// Let's try to build up an object. Put them in an array for looping.  \n\nconst gas = new Object();\nconst biofuel = new Object();\nconst wind = new Object();\nconst solar = new Object();\nconst hydro = new Object();\nconst nuclear = new Object();\n\nlet obj_array = [gas, wind, solar, hydro, biofuel, nuclear]\n\ngas.bar_colour = 'rgba(250, 222, 42,1)'\nhydro.bar_colour = 'rgba(87, 148, 242,1)'\nwind.bar_colour = 'rgba(115, 191, 105,1)'\nsolar.bar_colour = 'rgba(242, 73, 92,1)'\nbiofuel.bar_colour = 'rgba(230, 107, 64, 1)'\nnuclear.bar_colour = 'rgba(184, 119, 217, 1)'\n\ngas.trace_name = 'Natural Gas 🔥'\nhydro.trace_name = 'Hydro 🌊'\nwind.trace_name = 'Wind 💨'\nsolar.trace_name = 'Solar 🌞'\nbiofuel.trace_name = 'biofuel 🌲'\nnuclear.trace_name = 'Nuclear 😎'\n\n// SRC_capacity = Utilization Value Today\n//data.series[6].fields[0].values[0]\n// On the Jan 2024 updated version, these colours drive the bar colour\n/*\ngas.capacity_pct = data.series[6].fields[gas_index_util].values[0]\ngas.capacity_max_pct = data.series[0].fields[1].values[0]\ngas.capacity_min_pct = data.series[9].fields[0].values[0];\n\ncoal.capacity_pct = data.series[6].fields[coal_index_util].values[0]\ncoal.capacity_max_pct = data.series[1].fields[1].values[0]\ncoal.capacity_min_pct = data.series[10].fields[0].values[0]\n\nhydro.capacity_pct = data.series[6].fields[hydro_index_util].values[0]\nhydro.capacity_max_pct = data.series[3].fields[1].values[0]\nhydro.capacity_min_pct = data.series[12].fields[0].values[0]\n\nwind.capacity_pct = data.series[6].fields[wind_index_util].values[0]\nwind.capacity_max_pct = data.series[2].fields[1].values[0]\nwind.capacity_min_pct = data.series[11].fields[0].values[0]\n\nother.capacity_pct = data.series[6].fields[other_index_util].values[0]\nother.capacity_max_pct = data.series[4].fields[1].values[0]\nother.capacity_min_pct = data.series[13].fields[0].values[0]\n\nsolar.capacity_pct = data.series[6].fields[solar_index_util].values[0]\nsolar.capacity_max_pct = data.series[5].fields[1].values[0]\nsolar.capacity_min_pct = data.series[14].fields[0].values[0]\n*/\n//this is a column name: data.series[7].fields[2].name\n// Get column names from Daily mw query\nfor (let i = 0; i < 6; i++) {\n  if (data.series[0].fields[i].name == \"GAS\") {\n    gas_index_mw = i;\n  }\n  else if (data.series[0].fields[i].name == \"BIOFUEL\") {\n    biofuel_index_mw = i;\n  }\n  else if (data.series[0].fields[i].name == \"HYDRO\") {\n    hydro_index_mw = i;\n  }\n  else if (data.series[0].fields[i].name == \"WIND\") {\n    wind_index_mw = i;\n  }\n  else if (data.series[0].fields[i].name == \"SOLAR\") {\n    solar_index_mw = i;\n  }\n  else if (data.series[0].fields[i].name == \"NUCLEAR\") {\n    nuclear_index_mw = i;\n  }\n}\n\n// Get column names from One Year of MW History Query\nfor (let i = 0; i < 6; i++) {\n  if (data.series[1].fields[i].name == \"GAS\") {\n    gas_history_index = i;\n  }\n  else if (data.series[1].fields[i].name == \"BIOFUEL\") {\n    biofuel_history_index = i;\n  }\n  else if (data.series[1].fields[i].name == \"HYDRO\") {\n    hydro_history_index = i;\n  }\n  else if (data.series[1].fields[i].name == \"WIND\") {\n    wind_history_index = i;\n  }\n  else if (data.series[1].fields[i].name == \"SOLAR\") {\n    solar_history_index = i;\n  }\n  else if (data.series[1].fields[i].name == \"NUCLEAR\") {\n    nuclear_history_index = i;\n  }\n}\n\ngas.box_plot_data = data.series[1].fields[gas_history_index].values\nbiofuel.box_plot_data = data.series[1].fields[biofuel_history_index].values\nhydro.box_plot_data = data.series[1].fields[hydro_history_index].values\nwind.box_plot_data = data.series[1].fields[wind_history_index].values\nsolar.box_plot_data = data.series[1].fields[solar_history_index].values\nnuclear.box_plot_data = data.series[1].fields[nuclear_history_index].values\n\n//This pulls the MAX daily mw from the buffer array\n//let daily_max_mw = Math.max(data.series[7].fields[1].values)\ngas.daily_mw = data.series[0].fields[gas_index_mw].values\nbiofuel.daily_mw = data.series[0].fields[biofuel_index_mw].values\nhydro.daily_mw = data.series[0].fields[hydro_index_mw].values\nwind.daily_mw = data.series[0].fields[wind_index_mw].values\nsolar.daily_mw = data.series[0].fields[solar_index_mw].values\nnuclear.daily_mw = data.series[0].fields[nuclear_index_mw].values\n\n// Capacity Numbers - hard-coded for now based on Electricity Maps\n// In the future, we can make this dynamic. See below. \n// https://www.hydroquebec.com/generation/generating-stations.html\n// https://app.electricitymaps.com/zone/CA-QC\n/*biofuel.capacity_mw = 1310\ngas.capacity_mw = 411\nhydro.capacity_mw = 42200\nwind.capacity_mw = 3508\nsolar.capacity_mw = 10\nnuclear.capacity*/\n\n// Max capacity helps fill out the bar graph on the Jan 2024 version. \n\nbiofuel.capacity_mw = data.series[2].fields[biofuel_index_mw].values[0]\ngas.capacity_mw = data.series[2].fields[gas_index_mw].values[0]\nhydro.capacity_mw = data.series[2].fields[hydro_index_mw].values[0]\nwind.capacity_mw = data.series[2].fields[wind_index_mw].values[0]\nsolar.capacity_mw = data.series[2].fields[solar_index_mw].values[0]\nnuclear.capacity_mw = data.series[2].fields[nuclear_index_mw].values[0]\n\n// This is a temp placeholder until I get capcaity numbers set up. \nfor (var element of obj_array) {\n  //element.capacity_mw = element.daily_mw\n  //element.capacity_pct = 100\n  //element.capacity_max_pct = 100\n  //element.capacity_min_pct = 0\n  element.title_colour = title_colour\n} \n\n\n//Default font colors for outside labels \n//Because inside fonts shouldn't be same as the bar colour when new max/min\nbiofuel.font_colour = outside_bar_label_default_color\nwind.font_colour = outside_bar_label_default_color\nsolar.font_colour = outside_bar_label_default_color\ngas.font_colour = outside_bar_label_default_color\nhydro.font_colour = outside_bar_label_default_color\nnuclear.font_colour = outside_bar_label_default_color\n\ngas.text_label_pos = 'outside'\nbiofuel.text_label_pos = 'outside'\nhydro.text_label_pos = 'inside'\nnuclear.text_label_pos = 'inside'\nwind.text_label_pos = 'outside'\nsolar.text_label_pos = 'outside'\n\n// Change colors if new capacity factors are set\n/*\nfor (var element of obj_array) {\n  if (element.capacity_pct >= element.capacity_max_pct) { \n    element.bar_colour = new_max_colour; \n    element.colour = new_max_colour; \n    element.font_colour = new_max_colour; \n    element.title_colour = new_max_colour\n  } \n  else {\n    element.colour = max_colour; \n    element.title_colour = title_colour\n    }\n  if (element.capacity_pct <= element.capacity_min_pct) { \n    element.bar_colour = new_min_colour; \n    element.colour = new_min_colour; \n    element.font_colour = new_min_colour; \n    element.title_colour = new_min_colour\n  } \n  else {\n    element.colour = min_colour; \n    element.title_colour = title_colour\n    }\n}*/\n\nfor (var element of obj_array) {\n  // Build the basic bar trace. \n  element.trace_mw = {\n    type: 'bar',\n    orientation: 'h',\n    //barmode: 'relative',\n    y: [element.trace_name],\n    name: 'MW',\n    x: element.daily_mw,\n    textposition: 'auto',\n    textfont: {\n      size: bar_text_font_size, \n      align: 'right', \n      color: element.font_colour\n    },\n    insidetextanchor: 'start',\n    marker: {\n      color: element.bar_colour\n    }\n  }\n\n  // Build the capacity value shadow trace\n  element.trace_mw_capacity = {\n    type: 'bar',\n    orientation: 'h',\n    barmode: 'relative',\n    y: [element.trace_name],\n    //name: 'Capacity',\n    x: [element.capacity_mw - element.daily_mw + 1], // the 1 is to ensure something shows  up for QC until I get capacity\n    textfont: {\n      size: bar_text_font_size, \n      color: element.font_colour,\n      align: 'auto', \n    },\n    marker: {\n      color: pSBC ( capacity_shading_factor, element.bar_colour, false, true ),\n      opacity: 0.2\n    }\n  }\n\n  //Place text inside the big trace or outside the capacity trace\n  if (element.text_label_pos == 'inside') {\n    //element.trace_mw.text = ' '+element.daily_mw+' MW ('+Math.round(element.capacity_pct*10)/10+'% of capacity)'\n    element.trace_mw.text = ' '+element.daily_mw+' MW ('+Math.round(element.daily_mw / element.capacity_mw*1000)/10+'% of capacity)'\n  } else {\n    //element.trace_mw_capacity.text = ' '+element.daily_mw+' MW ('+Math.round(element.capacity_pct*10)/10+'% of capacity)'\n    element.trace_mw_capacity.text = ' '+element.daily_mw+' MW ('+Math.round(element.daily_mw / element.capacity_mw*1000)/10+'% of capacity)'\n  }\n\n  // Build the box plot \n  element.trace_box = {\n    name: element.trace_name,\n    orientation: 'h',\n    line: {\n        color: pSBC ( box_plot_shading_factor, element.bar_colour, false, true ),\n        width: 1\n      },\n    x: element.box_plot_data,\n    type: 'box',\n    fill: 'toself',\n    width: box_width,\n    fillcolor: pSBC ( box_plot_fill_shading_factor, element.bar_colour, transparent_color ),\n    boxpoints: false\n  };\n\n}\n\ndata = [\n  biofuel.trace_mw,\n  solar.trace_mw,\n  wind.trace_mw,\n  hydro.trace_mw,  \n  gas.trace_mw, \n  nuclear.trace_mw,\n  \n  gas.trace_mw_capacity,\n  solar.trace_mw_capacity,\n  biofuel.trace_mw_capacity,\n  wind.trace_mw_capacity,\n  hydro.trace_mw_capacity, \n  nuclear.trace_mw_capacity,\n\n  gas.trace_box,\n  solar.trace_box,\n  biofuel.trace_box,\n  wind.trace_box,\n  hydro.trace_box,\n  nuclear.trace_box\n  ];\n\nreturn {data};",
+        "syncTimeRange": false,
+        "timeCol": "",
+        "yamlMode": true,
+        "yaml_mode": true
+      },
+      "pluginVersion": "1.8.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB}"
+          },
+          "hide": false,
+          "query": "import \"math\"\r\nfrom(bucket: \"onpower\")\r\n  |> range(start: -24h, stop: -1s)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"production\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"outputmw\")\r\n  |> drop(columns: [\"_start\", \"_stop\"])\r\n  |> group(columns: [\"generator\", \"type\"], mode:\"by\")  \r\n  |> mean()\r\n  |> group(columns: [\"type\"], mode:\"by\")  \r\n  |> sum(column: \"_value\")  \r\n  |> map(fn: (r) => ({ r with _value: math.round(x: r._value) }))  \r\n  |> map(fn: (r) => ({ r with _pivot: \"pivot\" }))  \r\n  |> pivot(rowKey:[\"_pivot\"], columnKey: [\"type\"], valueColumn: \"_value\")  \r\n  |> drop(columns: [\"_pivot\"])  \r\n // |>group()",
+          "refId": "0 Daily MW"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB}"
+          },
+          "hide": false,
+          "query": "import \"math\"\r\ndata = from(bucket: \"onpower\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"production\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"outputmw\")\r\n  |> aggregateWindow(every: 1d, fn: mean, createEmpty: false)\r\n  |> drop(columns: [\"_start\", \"_stop\"])\r\n  |> group(columns: [\"_time\", \"type\"], mode:\"by\")  \r\n  |> sum(column: \"_value\")  \r\n  |> map(fn: (r) => ({ r with _value: math.round(x: r._value) }))  \r\n  |> pivot(rowKey:[\"_time\"], columnKey: [\"type\"], valueColumn: \"_value\")  \r\n  //|> drop(columns: [\"_time\"])  \r\n  |> map(fn: (r) => ({ r with _value: 0.0 }))  \r\n  |>group()\r\n\r\nn_records = (data\r\n  |> count()\r\n  |> findRecord(\r\n    fn: (key) => true,\r\n    idx: 0,\r\n    ))._value\r\n\r\ndata |> limit(n: n_records-1)\r\n  |> drop(columns: [\"_value\", \"_time\"])",
+          "refId": "1 MW History Box"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB}"
+          },
+          "hide": false,
+          "query": "from(bucket: \"onpower\")\r\n  |> range(start: -90d, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"production\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"capacitymw\")\r\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\r\n  |> max()  \r\n  |> group(columns: [\"type\"], mode:\"by\")  \r\n  |> sum(column: \"_value\")  \r\n  |>group()\r\n  |> map(fn: (r) => ({ r with _pivot: \"pivot\" }))  \r\n  |> pivot(rowKey:[\"_pivot\"], columnKey: [\"type\"], valueColumn: \"_value\")  \r\n  |> drop(columns: [\"_pivot\"])  ",
+          "refId": "2 Capacity"
+        }
+      ],
+      "timeFrom": "1y",
+      "type": "nline-plotlyjs-panel"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_INFLUXDB}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 90,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "normal"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "megwatt"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "outputmw BIOFUEL"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "orange",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "outputmw GAS"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "yellow",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "outputmw HYDRO"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "outputmw NUCLEAR"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "purple",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "outputmw SOLAR"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "outputmw WIND"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "NUCLEAR outputmw"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "purple",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "SOLAR outputmw"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "WIND outputmw"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "HYDRO outputmw"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "GAS outputmw"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "yellow",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "BIOFUEL outputmw"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "orange",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 16
+      },
+      "id": 2,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.3.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB}"
+          },
+          "query": "from(bucket: \"onpower\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"production\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"outputmw\" )\r\n  //|> filter(fn: (r) => r[\"type\"] == \"NUCLEAR\" or r[\"type\"] == \"WIND\")\r\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\r\n  |> group(columns: [\"_time\", \"_field\", \"type\"], mode:\"by\")\r\n  |> sum(column: \"_value\")\r\n  |> group(columns: [\"_field\", \"type\"], mode:\"by\")  \r\n  |> pivot(rowKey:[\"_time\"], columnKey: [\"type\"], valueColumn: \"_value\")  ",
+          "refId": "A"
+        }
+      ],
+      "title": "Ontario Grid Output",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {},
+            "includeByName": {},
+            "indexByName": {
+              "BIOFUEL outputmw": 6,
+              "GAS outputmw": 5,
+              "HYDRO outputmw": 3,
+              "NUCLEAR outputmw": 1,
+              "SOLAR outputmw": 2,
+              "WIND outputmw": 4,
+              "_time": 0
+            },
+            "renameByName": {}
+          }
+        }
+      ],
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "${DS_INFLUXDB}"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 90,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "normal"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "megwatt"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "outputmw BIOFUEL"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "orange",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "outputmw GAS"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "yellow",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "outputmw HYDRO"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "outputmw NUCLEAR"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "purple",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "outputmw SOLAR"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "outputmw WIND"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "NUCLEAR outputmw"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "purple",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "SOLAR outputmw"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "WIND outputmw"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "HYDRO outputmw"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "GAS outputmw"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "yellow",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "BIOFUEL outputmw"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "orange",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 24
+      },
+      "id": 7,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.3.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "${DS_INFLUXDB}"
+          },
+          "query": "from(bucket: \"onpower\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"production\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"outputmw\" )\r\n  \r\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\r\n  |> map(fn: (r) => ({ r with type_loc: r.type + \"_\" + r.generator }))\r\n  |> group(columns: [\"_time\", \"_field\", \"type_loc\"], mode:\"by\")\r\n  |> mean(column: \"_value\")\r\n  |> group(columns: [\"_field\", \"type_loc\"], mode:\"by\")  \r\n  |> pivot(rowKey:[\"_time\"], columnKey: [\"type_loc\"], valueColumn: \"_value\")  ",
+          "refId": "A"
+        }
+      ],
+      "title": "Ontario Grid Output",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {},
+            "includeByName": {},
+            "indexByName": {
+              "BIOFUEL outputmw": 6,
+              "GAS outputmw": 5,
+              "HYDRO outputmw": 3,
+              "NUCLEAR outputmw": 1,
+              "SOLAR outputmw": 2,
+              "WIND outputmw": 4,
+              "_time": 0
+            },
+            "renameByName": {}
+          }
+        }
+      ],
+      "type": "timeseries"
+    }
+  ],
+  "preload": false,
+  "refresh": "",
+  "schemaVersion": 42,
+  "tags": [],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-24h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "Ontario",
+  "uid": "ca58b2af-3ec2-45e6-a3ff-75b7dfccb5b9",
+  "version": 24,
+  "weekStart": ""
+}
